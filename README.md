@@ -9,11 +9,11 @@
 #include <stdlib.h>
 #include "leak_checker.h" //追加
 
-int main(void)
+int main(int argc, char *argv[])
 {
   void *p;
 
-  leak_checker_init();  //追加
+  leak_checker_init(argv[0]);  //追加
 
   p = malloc(1024);
   p = calloc(2048, 2);

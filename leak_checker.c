@@ -13,6 +13,8 @@
 
 static LC_T lc[N];
 
+static char app_name[PATH_MAX];
+
 static void *leak_checker_malloc_hook(size_t, const void *);
 static void *leak_checker_realloc_hook(void *, size_t, const void *);
 static void leak_checker_free_hook(void *, const void *);
@@ -23,8 +25,11 @@ static void *(*old_malloc_hook)(size_t, const void *);
 static void *(*old_realloc_hook)(void *, size_t, const void *);
 static void (*old_free_hook)(void *, const void *);
 
-void leak_checker_init(void)
+void leak_checker_init(char *app)
 {
+  
+  strncpy(app_name, app, sizeof(app));
+
   for (int i = 0; i < N; ++i)
   {
     lc[i].p = NULL;
@@ -185,7 +190,7 @@ static char *get_sourceline(const void *ptr) {
   static char buf[PATH_MAX * 2];
   char src[512];
 
-  snprintf(src, sizeof(src), "/usr/bin/addr2line %p", ptr);
+  snprintf(src, sizeof(src), "/usr/bin/addr2line -e %s %p", app_name, ptr);
 
   FILE *fp;
   if ((fp = popen(src, "r")) == NULL) {
